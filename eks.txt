@@ -1,0 +1,80 @@
+Devops projects:
+https://www.youtube.com/watch?v=vU7K94Pt2yQ
+1. https://www.youtube.com/watch?v=Z9G5stlXoyg&list=RDCMUC_evcfxhjjui5hChhLE08tQ&start_radio=1
+https://www.youtube.com/watch?v=8D46Pgbz0gg&list=PLxzKY3wu0_FJdJd3IKdiM4Om1hGo2Hsdt
+
+
+
+go to corresponding directory:
+
+git add .
+git status
+git commit -m "first"
+
+EKS:
+This option allows you to deploy a Kubernetes cluster without the overhead of managing the control plane, as it is fully hosted in AWS. Only the K8s worker nodes need to be managed, sparing you from some of the complexity of the self-hosted solution.
+mazon Elastic Kubernetes Service (Amazon EKS) is a managed service that makes it easy for you to run Kubernetes on AWS without needing to stand up or maintain your own Kubernetes control plane.
+Amazon EKS runs Kubernetes control plane instances across multiple Availability Zones to ensure high availability. Amazon EKS automatically detects and replaces unhealthy control plane instances, and it provides automated version upgrades and patching for them.
+Amazon EKS is also integrated with many AWS services to provide scalability and security for your applications, including the following:
+Amazon ECR for container images
+Elastic Load Balancing for load distribution
+IAM for authentication
+Amazon VPC for isolation
+
+The big benefit of EKS and other similar hosted Kubernetes services are taking away the operational burden involved in running this control plane. You deploy cluster worker nodes using defined AMIs and with the help of CloudFormation\Terraform, and EKS will provision, scale and manage the Kubernetes control plane for you to ensure high availability, security, and scalability.
+
+
+1. prerequisite
+IAM roles:
+clusterrole: 
+eks-cluster-role - cluster and service
+eks-worker-role - ekscluster-cni, workerpolicy-ec2containerregistry-readonly
+
+VPC: cloudformation:
+https://amazon-eks.s3.us-west-2.amazonaws.com/cloudformation/2020-08-12/amazon-eks-vpc-private-subnets.yaml
+
+2.
+create cluster
+
+
+aws configure
+
+
+Kubectl:
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.9/2020-08-04/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+mkdir -p $HOME/bin && mv ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+echo 'export PATH=$PATH:$HOME/bin' >> ~/.bash_profile
+kubectl version --short --client
+
+
+
+iam authenticator
+curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
+chmod +x aws-iam-authenticator
+mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+aws-iam-authenticator help
+
+
+aws eks update-kubeconfig --name testcluster --region ap-southeast-1
+vi /root/.kube/config
+export KUBECONFIG=~/.kube/config
+kubectl get svc
+kubectl get ns
+kubectl get nodes
+
+create workernode:
+check in ec2 console
+check in ec2 terminal
+
+kubectl get nodes -o wide
+ 
+vi demodeploy
+kubectl create -f demodeploy
+kubectl get all
+kubectl expose deploy testdeploy --type NodePort --port 80
+
+kubectl delete -f demodeploy.yaml
+kubectl get all
+
